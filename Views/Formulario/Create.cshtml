@@ -1,0 +1,55 @@
+@model Formulario
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<script>
+    let addCampo = () => {
+        let nomeCampoSelecionado = $("#select-campos option:selected").text()
+        let campoValor = $('#select-campos').val()
+        let campoNomeForm = `<li class='list-group-item' >${nomeCampoSelecionado}</li>`
+        let campoValorForm = `<input type='text' class='hidden' value='${campoValor}' name='camposForm' />`
+        if(![...document.getElementsByName("camposForm")].map(campo => campo.value).includes($("#select-campos").val()))
+            $('#ul-campos').append(campoNomeForm + campoValorForm)
+    }
+</script>
+
+<h1>Create</h1>
+
+<h4>Formulario</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Nome" class="control-label"></label>
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Campos</label>
+                <select asp-items="ViewBag.Campos" class="form-control" id="select-campos" ></select>
+                <br>
+                <div class="row d-flex justify-content-space-around align-items-center">
+                    <div class="form-group col-md-6">
+                        <ul id="ul-campos">
+                        </ul>
+                    </div>
+                    <a class="btn btn-primary col-md-6" onclick="addCampo()">Add Campo</a>
+                </div>
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+                <br>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

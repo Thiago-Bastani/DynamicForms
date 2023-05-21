@@ -1,0 +1,63 @@
+@model Formulario
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<script>
+    let addCampo = () => {
+        let nomeCampoSelecionado = $("#select-campos option:selected").text()
+        let campoValor = $('#select-campos').val()
+        let campoNomeForm = `<li class='list-group-item' >${nomeCampoSelecionado}</li>`
+        let campoValorForm = `<input type='text' class='hidden' value='${campoValor}' name='camposForm' />`
+        if(![...document.getElementsByName("camposForm")]
+        .map(campo => campo.value).includes($("#select-campos").val()) &&
+        ![...document.getElementsByName("view-camposForm")]
+        .map(campo => campo.value).includes($("#select-campos").val()))
+            $('#ul-campos').append(campoNomeForm + campoValorForm)
+    }
+</script>
+
+<h1>Editar</h1>
+
+<h4>Formulario</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Nome" class="control-label"></label>
+                <input class="form-control" type="text" asp-for="Nome" />
+                <br>
+                <select asp-items="ViewBag.CamposSelect" class="form-control" id="select-campos" ></select>
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <div class="row d-flex justify-content-space-around align-items-center">
+                    <div class="form-group col-md-6">
+                        <ul id="ul-campos">
+                            @foreach (var campo in @ViewBag.Campos)
+                            {
+                                <li class="list-group-item">@campo.Nome</li>
+                                <input type="text" class="hidden" value="@campo.Id" name="view-camposForm" />
+                            }
+                        </ul>
+                    </div>
+                    <a class="btn btn-primary col-md-6" onclick="addCampo()">Add Campo</a>
+                </div>
+            </div>
+            <br>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
