@@ -25,7 +25,7 @@ namespace Formularios.Controllers
                         View(await _context.Formularios.ToListAsync()) :
                         Problem("Entity set 'AppDbContext.Formularios'  is null.");
         }
-        public async Task<IActionResult> VerRegistros(int id)
+        public async Task<IActionResult> VerRegistros(int? id)
         {
             string NomeFormulario = _context.Formularios.Find(id).Nome;
             return _context.Registros != null ?
@@ -33,28 +33,6 @@ namespace Formularios.Controllers
                                 .Where(reg => reg.NomeFormulario == NomeFormulario)
                                 .ToListAsync()) :
                  Problem("Entity set 'AppDbContext.Registros'  is null.");
-        }
-
-        // GET: Formulario/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Formularios == null)
-            {
-                return NotFound();
-            }
-
-            var formulario = await _context.Formularios
-                .Include(form => form.Campos)
-                .ThenInclude(Campo => Campo.Tipo)
-                .FirstAsync(m => m.Id == id);
-
-
-            if (formulario == null)
-            {
-                return NotFound();
-            }
-
-            return View(formulario);
         }
 
         // GET: Formulario/Create
