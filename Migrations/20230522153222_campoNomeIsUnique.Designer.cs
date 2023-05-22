@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Formularios.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230522153222_campoNomeIsUnique")]
+    partial class campoNomeIsUnique
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,7 +32,6 @@ namespace Formularios.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Nome")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("TipoId")
@@ -37,7 +39,9 @@ namespace Formularios.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Nome");
+                    b.HasIndex("Nome")
+                        .IsUnique()
+                        .HasFilter("[Nome] IS NOT NULL");
 
                     b.HasIndex("TipoId");
 
@@ -171,7 +175,7 @@ namespace Formularios.Migrations
                         .IsRequired();
 
                     b.HasOne("RegistroViewModel", "Registro")
-                        .WithMany("RegInfo")
+                        .WithMany()
                         .HasForeignKey("RegistroId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -179,11 +183,6 @@ namespace Formularios.Migrations
                     b.Navigation("Campo");
 
                     b.Navigation("Registro");
-                });
-
-            modelBuilder.Entity("RegistroViewModel", b =>
-                {
-                    b.Navigation("RegInfo");
                 });
 #pragma warning restore 612, 618
         }

@@ -25,27 +25,14 @@ namespace Formularios.Controllers
                         View(await _context.Formularios.ToListAsync()) :
                         Problem("Entity set 'AppDbContext.Formularios'  is null.");
         }
-
-        // GET: Formulario/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> VerRegistros(int? id)
         {
-            if (id == null || _context.Formularios == null)
-            {
-                return NotFound();
-            }
-
-            var formulario = await _context.Formularios
-                .Include(form => form.Campos)
-                .ThenInclude(Campo => Campo.Tipo)
-                .FirstAsync(m => m.Id == id);
-
-
-            if (formulario == null)
-            {
-                return NotFound();
-            }
-
-            return View(formulario);
+            string NomeFormulario = _context.Formularios.Find(id).Nome;
+            return _context.Registros != null ?
+                View(await _context.Registros
+                                .Where(reg => reg.NomeFormulario == NomeFormulario)
+                                .ToListAsync()) :
+                 Problem("Entity set 'AppDbContext.Registros'  is null.");
         }
 
         // GET: Formulario/Create
@@ -149,6 +136,68 @@ namespace Formularios.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(formulario);
+        }
+
+        // GET: Formulario/NovoRegistro/5
+        public async Task<IActionResult> NovoRegistro(int? id)
+        {
+            if (id == null || _context.Formularios == null)
+            {
+                return NotFound();
+            }
+
+            var formulario = await _context.Formularios
+                .Include(form => form.Campos)
+                .ThenInclude(Campo => Campo.Tipo)
+                .FirstAsync(m => m.Id == id);
+
+
+            if (formulario == null)
+            {
+                return NotFound();
+            }
+
+            return View(formulario);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> NovoRegistro()
+        {
+
+            var Campos = Request.Form["campo"];
+            var CamposName = Request.Form["campo-name"];
+            var NomeFormulario = Request.Form["NomeFormulario"];
+            var valores = Campos.ToString().Split(',').ToArray();
+            var nomes = CamposName.ToString().Split(',').ToArray();
+            var registro = new RegistroViewModel();
+            var registrosInfo = new List<RegistroInfoViewModel>();
+
+            foreach (var valor in valores)
+            {
+                registrosInfo.Add(new RegistroInfoViewModel());
+            }
+
+            int i = 0;
+            foreach (var registroInfo in registrosInfo)
+            {
+                registroInfo.Campo = _context.Campos.First(campo => campo.Nome == nomes[i]);
+                registroInfo.Dado = valores[i];
+                i++;
+            }
+
+            registro.NomeFormulario = NomeFormulario;
+            registro.RegInfo = new List<RegistroInfoViewModel>();
+            registro.RegInfo.AddRange(registrosInfo);
+
+            if (ModelState.IsValid)
+            {
+                _context.Registros.Add(registro);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.Campos = new SelectList(_context.Campos, "Id", "Nome");
+            return View(registro);
         }
 
         // GET: Formulario/Delete/5

@@ -9,6 +9,8 @@ public class AppDbContext : DbContext
     public virtual DbSet<Formulario> Formularios { get; set; }
     public virtual DbSet<Tipo> Tipos { get; set; }
     public virtual DbSet<Campo> Campos { get; set; }
+    public virtual DbSet<RegistroViewModel> Registros { get; set; }
+    public virtual DbSet<RegistroInfoViewModel> RegistrosInfo { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -19,9 +21,12 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Formulario>(form
-         => form.HasMany("Campos")
-         .WithMany("Formularios"));
-         
+            => form.HasMany("Campos")
+            .WithMany("Formularios"));
+
+        modelBuilder.Entity<Campo>(campo
+             => campo.HasAlternateKey(campo => campo.Nome));
+
         base.OnModelCreating(modelBuilder);
     }
 
