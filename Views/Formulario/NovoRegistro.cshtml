@@ -1,0 +1,40 @@
+@model Formulario
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+
+<div class="row d-flex justify-content-center">
+   <form asp-action="NovoRegistro">
+        <div class="col-md-6">
+            <h1>Formulario de @Html.DisplayFor(model => model.Nome)</h1>
+            <input value="@Model?.Nome" name="NomeFormulario" class="hidden">
+                @foreach (var campo in Model?.Campos)
+                {
+                    <label for="form">@campo.Nome</label>
+                    @if (campo.Tipo?.Nome.ToLower() == "checkbox")
+                    {
+                        <input type="text" name="campo-name" value="@campo.Nome" class='hidden' />
+                        <input name="campo" type="@campo.Tipo?.Nome.ToLower()" />
+
+                        <br>
+                    }
+                    else
+                    {
+                        <input type="text" name="campo-name" value="@campo.Nome" class='hidden' />
+                        <input name="campo" name="campo" class="form-control" type="@campo.Tipo?.Nome.ToLower()" />
+                    }
+                }
+        </div>
+        <br>
+        <div class="form-group">
+                <input type="submit" value="Registrar" class="btn btn-primary" />
+        </div>
+    </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
