@@ -25,9 +25,7 @@ public class AppDbContext : DbContext
             .WithMany("Formularios"));
 
         modelBuilder.Entity<Campo>(campo
-             => campo.HasIndex(campo
-                 => campo.Nome)
-             .IsUnique());
+             => campo.HasAlternateKey(campo => campo.Nome));
 
         base.OnModelCreating(modelBuilder);
     }
